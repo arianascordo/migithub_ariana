@@ -1,0 +1,98 @@
+Accion ej_supermercado (prim:puntero a descuentos) es
+    //ambiente
+        fecha=registro
+            dd:1..31
+            mm:1..12
+            aa:N(4)
+        finregistro
+
+        COMPRAS=registro
+            fecha_compra:fecha
+            DNI_cliente:N(8)
+            Cantidad_art:N(4)
+            importe_tot:N(7)
+        finregistro
+
+        arch_c:archivo de compras ordenado por fecha_compra
+        reg_c: COMPRAS
+
+        FIDELIZACION=registro
+            DNI_cliente:N(8)
+            ApyNo:AN(80)
+            Fecha_ad:fecha
+            categoria:AN(15)
+        finregistro
+
+        arch_f: archivo de fidelización indexado por DNI_cliente
+        reg_f: FIDELIZACION
+
+        NO_socios=registro //esta lista se debe generar a partir de aquellos clientes que no se encuentren en FIDELIZACION
+            DNI_cliente:N(8)
+            Cantidad_compras:N(3)
+            Importe_tot:N(8)
+            prox:puntero a NO_socios
+        finregistro
+        q,t,ant,prim2:puntero a NO_socios        
+
+        descuentos=registro //en esta lista debo buscar un nodo que contenga al importe total (que este entre el maximo y el minimo)
+            importe_min:N(4)
+            importe_max:N(7)
+            desc:0,01..0,09
+            cupo_disponible:logico
+            rubro_desc:1..t9
+            ant,prox:puntero a descuentos
+        finregistro
+        p,ult: puntero a descuentos
+
+        procedimiento cargar_nuevo_nodo es
+            nuevo(t)
+            *t.DNI_cliente:=reg_c.DNI_cliente
+            *t.Cantidad_compras:=1
+            *t.importe_tot:=reg_c.importe_tot
+        finprocedimiento 
+
+    //proceso
+        ABRIR(arch_c)
+        LEER(arch_c,reg_c)
+        prim2:=nill
+        Mientras NO FDA (arch_c) hacer
+            reg_f.DNI_cliente:=reg_c.DNI_cliente //busca el cliente en el archivo de FIDELIZACION
+            LEER(arch_f,reg_f)
+            si EXISTE entonces
+                p:=prim
+                mientras (p<>nill) y (*p.importe_min>reg_c.importe_tot) y (*p.importe_max<reg_c.importe_tot) hacer
+                    p:=*p.prox //recorre la lista hasta encontrar un rango que contenga el importe total
+                finmientras
+                si cupo_disponible entonces 
+                    esc("Importe final: ", reg_c.importe*(*p.desc)) //calcula el precio final con el descuento
+                    esc("Descuento aplicado del ",*p.desc*100,"%")
+                    esc("Rubro: ",*p.rubro_desc)
+                sino
+                    esc("No hay disponibilidad de cupos")
+                finregistro
+            sino
+                q:=prim2
+                ant:=nill
+                Mientras (q<>nill) y (*q.DNI_cliente<*.reg_c.DNI_cliente)hacer //hace una carga ordenada o ve si ya existe
+                    ant:=q
+                    q:=*q.prox
+                FinMientras    
+                si ant=nill entonces //si hay que cargar antes del primer nodo
+                    cargar_nuevo_nodo
+                    *t.prox:=prim
+                    prim:=t
+                sino
+                    si *q.DNI_cliente=*reg_c.DNI_cliente entonces //si el dni ya existe se actualiza la cantidad de compras y el importe total
+                        *q.Cantidad_compras:=*q.cantidad_compras+1
+                        *q.importe_tot:=*q.importe_tot+reg_c.importe_tot
+                    sino
+                        cargar_nuevo_nodo
+                        *t.prox:=*ant.prox
+                        *ant.prox:=t
+                    finsi 
+                finsi 
+            finsi
+            LEER(arch_c,reg_c)
+        FinMientras
+        cerrar(arch_c);cerrar(arch_f)
+FinAccion  
