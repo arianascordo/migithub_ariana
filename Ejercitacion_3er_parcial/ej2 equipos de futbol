@@ -1,0 +1,144 @@
+Accion ej2_eq_futbol (prim: puntero a Nodo) es
+    //ambiente
+        Nodo=registro
+            pais: N(20)
+            edades: arreglo [1..26] de enteros
+            grupo:N(2)
+            puntos:N(3)
+            ta_am:N(2)
+            ta_ro:N(2)
+            dif_gol:N(2)    
+            prox: puntero a Nodo
+        finregistro
+        p:puntero a Nodo
+
+        Partidos=registro
+            id_partido:N(8)
+            eq_local:AN(20)
+            eq_visitante:AN(20)
+        finregistro
+        arch_p: archivo de Partidos
+        reg_p:Partidos
+
+        Resultados=registro
+            id_partido:N(8)
+            cant_goles_eqlo:N(2)
+            cant_goles_eqvi:N(2)
+            ta_ro:N(2)
+            ta_am:N(2)
+        finregistro
+        arch_r: archivo de resultados indexado por id_partido
+
+        Salida=registro
+            pais:AN(20)
+            puntos:N(3)
+            ant,prox: puntero a Salida
+        finregistro
+        q,t,prim1,ult:puntero a Salida
+
+        Procedimiento buscar_equipos(a:AN(20)) es
+            p:=prim
+            mientras (p<>nill) y (*p.pais<>reg_p.eq_local) hacer
+                p:=*p.prox
+            finmientras
+        finprocedimiento
+        
+        Procedimiento actualizar_lo (bandera) es
+            si bandera=1 entonces
+                *p.puntos:=*p.puntos+3
+            sino
+                si badnera=2 entonces
+                    *p.puntos:=*p.puntos+1
+                finsi
+            finsi            
+            *p.ta_am:=reg_r.ta_amLo
+            *p.ta_ro:=reg_r.ta_roLo
+            *p.dif_gol:=*p.dif_gol+(reg_r.cant_goles_eqlo-reg_r.cant_goles_eqvi)
+        finprocedimiento
+        
+        Procedimiento actualizar_vi (bandera) es
+            si bandera=2 entonces
+                *p.puntos:=*p.puntos+1
+            sino
+                si bandera=3 entonces
+                    *p.puntos:=*p.puntos+3
+                finsi
+            finsi            
+            *p.ta_am:=reg_r.ta_amVi
+            *p.ta_ro:=reg_r.ta_roVi
+            *p.dif_gol:=*p.dif_gol+(reg_r.cant_goles_eqvi-reg_r.cant_goles_eqlo)
+        FinProcedimiento   
+        
+        bandera: 1..3
+        Procedimiento insertar_nodo es
+        nuevo(t)
+        *t.pais:=*p.pais
+        *t.puntos:=*p.puntos
+        q:=prim1
+        mientras(q<>nill) y (*q.puntos<*p.puntos) hacer
+            q:=*q.prox
+        finmientras
+        si prim1=nill entonces
+            *t.ant:=nill
+            *t.prox:=nill
+            prim1:=t
+            ult:=t 
+        sino
+            si q=nill entonces
+                *ult.prox:=t
+                *t.ant:=ult 
+                *t.prox:=nill
+                ult:=t
+            sino    
+                *t.ant:=*q.ant
+                *q.ant.prox:=t
+                *t.prox:=q 
+                *q.ant:=t 
+            finsi
+        finsi 
+    FinProcedimiento 
+    
+    mayor:enteros
+    mayor_eq:N(20)
+
+    //proceso
+        ABRIR(arch_p)
+        LEER(arch_p,reg_p)
+        mientras NO FDA(arch_p) hacer
+            reg_r.id_partido:=reg_p.id_partido //busca el equipo en el archivo de resultados
+            LEER(arch_r,reg_r)
+            si existe entonces
+                si cant_goles_eqlo<cant_goles_eqvi entonces //gana equipo local
+                    bandera:=1
+                sino
+                    si cant_goles_eqlo=cant_goles_eqvi entonces //empatan
+                        bandera:=2
+                    sino
+                        bandera:=3 //gana visitante
+                    finsi
+                finsi                
+                buscar_equipos(reg_p.eq_local) //busca el equipo local en la lista creada del ej 1
+                actualizar_lo (bandera) //actualiza los campos vacíos
+                buscar_equipos(reg_p.eq_visitante)
+                actualizar_vi (bandera)
+            sino
+                esc("Error, id inexistente")
+            finsi
+            LEER(arch_p,reg_p)
+        FinMientras  
+        mayor:=0
+        p:=prim
+        prim1:=nill
+        mientras (p<>nill) hacer //busca en la lista con los datos de los equipos
+            si (*p.puntos>4) o (*p.puntos = 4) y (*p.dif_gol>2) entonces //condiciones para pasar a la sig fase
+               insertar_nodo //insertar equipo en la nueva lista
+               esc("El equipo del pais: ",*p.pais," ha pasado a la siguiente fase")
+               si *p.ta_ro>mayor entonces //compara qué grupo tuvo más tarjetas rojas
+                mayor:=*p.ta_ro
+                mayor_eq:=*p.pais
+               finsi
+            finsi
+            p:=*p.prox
+        finmientras 
+        cerrar(arch_p); cerrar(arch_r) 
+FinAccion 
