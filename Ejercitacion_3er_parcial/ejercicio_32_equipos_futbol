@@ -1,0 +1,65 @@
+Accion ej_1 (prim: puntero a Nodo) es
+    //ambiente
+        Nodo=registro
+            pais: N(20)
+            edades: arreglo [1..26] de enteros
+            grupo:N(2)
+            puntos:N(3)
+            ta_am:N(2)
+            ta_ro:N(2)
+            prox: puntero a Nodo
+        finregistro
+        p,ant:puntero a Nodo
+        i:entero
+
+        Funcion suma_edades(a:arreglo [1..26] de enteros, i: entero): entero
+            si i=1 entonces
+                suma_edades:=a(i)
+            sino
+                suma_edades:=suma_edades(a,i-1)
+            finsi
+        FinFuncion 
+
+        grupo_usu:N(2)
+        pais_usu:AN(20)
+        mayor,menor:entero
+        mayor_eq,menor_eq:AN(20)
+
+    //proceso
+    Para i:=1 hasta 32 hacer
+        esc('Ingrese pais sorteado y grupo')
+        leer(pais_usu,grupo_usu)
+        p:=prim
+        Mientras (p<>nill) y (*p.pais<>pais_usu) hacer //cuando encuentra el pais que ha ingresado el usuario sale del bucle
+            p:=*p.prox
+        FinMientras
+        *p.grupo:=grupo_usu //se asigna el número de grupo a ese país ingresado por el usuario
+        promedio:=suma_edades(*p.edades,26)/26 //va calculando el promedio de edades de cada equipo
+        mayor:=0;Menor:=HV
+        si promedio>mayor entonces
+            mayor:=promedio
+            mayor_eq:=pais_usu
+        sino
+            si promedio<menor entonces
+                menor:=promedio
+                menor_eq:=pais_usu
+            finsi
+        finsi            
+    finpara
+    p:=*prim.prox
+    ant:=prim
+    mientras (p<>nill) hacer //va ordenando los grupos de menor a mayor
+        si (*p.grupo<*ant.grupo) entonces
+            *ant.prox:=*p.prox
+            *p.prox:=ant
+            si ant = prim entonces
+                prim:=p
+            finsi
+        sino
+            ant:=p
+        finsi
+        p:=*p.prox
+    finmientras 
+    esc('El pais con mayor promedio de edad es ',mayor_eq)
+    esc('El pais con menor promedio de edad es ',menor_eq)                   
+FinAccion                             
