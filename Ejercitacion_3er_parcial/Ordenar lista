@@ -1,0 +1,14 @@
+p:=*prim.prox
+ant:=prim
+mientras (p<>nill) hacer
+    si *p.dato<*ant.dato entonces
+        *ant.prox:=*p.prox
+        *p.prox:=ant
+        si ant = prim entonces
+            prim:=p
+        finsi
+    sino
+        ant:=p
+    finsi
+    p:=*p.prox
+finmientras
