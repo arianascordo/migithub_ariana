@@ -16,7 +16,7 @@ Accion ej_1 (prim: puntero a Nodo) es
             si i=1 entonces
                 suma_edades:=a(i)
             sino
-                suma_edades:=suma_edades(a,i-1)
+                suma_edades:=a(i)+suma_edades(a,i-1)
             finsi
         FinFuncion 
 
