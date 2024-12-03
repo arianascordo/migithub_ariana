@@ -1,0 +1,45 @@
+Accion ej_presion (prim: puntero a monitoreo) es
+    //ambiente
+        monitoreo=registro 
+            DNI_paciente:N(8)
+            NomyAp:AN(60)
+            Nro_cama:N(2)
+            Nro_hab:N(3)
+            Pa_sistolica, Pa_diastolica: arreglo [1..4] de enteros //Pa_sistolica<120 Pa_diastolica<80
+            prox: puntero a monitoreo
+        finregistro
+        p,q: puntero a monitoreo    
+
+        //eliminar aquellos cuya presión se encuentran dentro de los valores normales
+
+        Funcion presion(p:arreglo [1..4] de enteros,i: entero): entero //saca el promedio de cada presión según los parámetros que se le asigne
+            si i=1 entonces
+                presion:=p(i)
+            sino
+                presion:=p(i)+presion(p,i-1)
+            finsi        
+        finfuncion  
+
+        ps, pa : real
+    
+    //proceso
+        p:=prim
+        ant:=nill
+        mientras (p<>nill) hacer
+            ps:=presion(*p.Pa_sistolica,4)/4 //saca el promedio de presion sistolica
+            pa:=presion(*p.Pa_diastolica,4)/4 //"" de presión diastolica
+            si (ps<120) y (pa<80) entonces //si está dentro de los valores normales la mayoría de veces
+                si ant=nill entonces //si tiene que eliminar el primer elemento
+                    prim:=*p.prox
+                    disponer(p)
+                    p:=*prim.prox 
+                sino   
+                    *ant.prox:=*p.prox
+                    disponer(p)
+                    p:=*ant.prox
+                finsi
+            sino
+                ant:=p
+                p:=p.prox
+            finsi        
+        FinMientras    
