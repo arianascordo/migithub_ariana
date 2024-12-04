@@ -1,0 +1,27 @@
+La información de una tarjeta de crédito se encuentra dentro de un arreglo de 20 posiciones. Para
+validar una compra se siguen los siguientes pasos:
+1. comenzar a procesar desde el último dígito hacia el primero
+2. doblar los digitos en posiciones impares (sumar sus dígitos). Si un dítito resulta mayor que nueve
+después de ser doblado, sumar sus dígitos (14->1+4=5)
+3.sumar todos los dígitos obtenidos
+4.verificar si es divisible por 5, si lo es el número es válido.
+
+subaccion validacion(a: arreglo [1..20] de enteros, i,aux: entero)
+    si i=1 entonces
+        validacion:=a(i)*2
+        si validacion>9 entonces   
+            validacion:= (validacion MOD 10) + (validacion DIV 10)
+        finsi
+    sino
+        si (i MOD 2 <> 0) entonces
+            aux:=a(i)*2
+            si aux>9 entonces
+                validacion:=(aux MOD 10)+(aux DIV 10)+validacion(a,i-1)
+            sino
+                validacion:=aux+validacion(a,i-1)
+            finsi
+        sino    
+            validacion:=a(i)+validacion(a,i-1)
+        finsi
+    finsi 
+finsubaccion
