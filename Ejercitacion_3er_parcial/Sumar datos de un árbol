@@ -1,0 +1,7 @@
+Funcion sumar(raiz:puntero a nodo) es
+  si raiz=nill entonces
+    sumar:=0 //caso base
+  sino
+    sumar:=*raiz.dato+sumar(*raiz.izq)+sumar(*raiz.der)
+  finsi
+FunFuncion
