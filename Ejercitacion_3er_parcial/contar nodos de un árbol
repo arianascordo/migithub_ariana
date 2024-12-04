@@ -1,0 +1,7 @@
+Funcion contar_nodos (raiz:puntero a nodo) es
+  si raiz = nill entonces
+    contar:=0
+  sino
+    contar:=1+contar(*raiz.izq)+contar(*raiz.der)
+  finsi
+FinFuncion
