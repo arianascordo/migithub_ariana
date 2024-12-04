@@ -1,0 +1,14 @@
+Funcion Altura(p:puntero a NODO) es
+  si (p<>nill) entonces
+    si(*p.izq=nill) y (*p.der=nill) entonces
+      altura:=1 //caso base
+    sino
+      si Altura(*p.izq)>Altura(*p.der) entonces
+        Altura:=Altura(*p.izq)+1
+      sino
+        altura:=altura(*p.der)+1
+      finsi
+    sino
+      altura:=0 //caso base
+    finsi
+FinFuncion
