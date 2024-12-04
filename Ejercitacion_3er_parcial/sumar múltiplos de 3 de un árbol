@@ -1,0 +1,11 @@
+Funcion multiplo_3(raiz: puntero a nodo) es
+  si raiz=nill entonces
+    multiplo_3:=0 //caso base
+  sino
+    si *raiz.dato MOD 3 = 0 entonces
+      multiplo_3:=*raiz.dato+multiplo_3(*raiz.izq)+multiplo_3(*raiz.der)
+    sino
+      multiplo_3:=multiplo_3(*raiz.izq)+multiplo_3(*raiz.der)
+    finsi
+  finsi
+FinFuncion  
